@@ -473,7 +473,9 @@ The following steps are required to install custom userparameters and/or scripts
 
 * Put the desired userparameter file in the `templates/userparameters` directory and name it as `<userparameter_name>.j2`. For example: `templates/userparameters/mysql.j2`. You can change the default directory to a custom one modifying `zabbix_agent_userparameters_templates_src` variable.
 * Put the scripts directory (if any) in the `files/scripts` directory. For example: `files/scripts/mysql`. You can change the default directory to a custom one modifying `zabbix_agent_userparameters_scripts_src` variable.
-* Add `zabbix_agent_userparameters` variable to the playbook as a list of dictionaries and define userparameter name and scripts directory name (if there are no scripts just no not specify the `scripts_dir` variable).
+* Add `zabbix_agent_userparameters` variable to the playbook as a list of dictionaries and define userparameter name and scripts directory name (if there are no scripts just do not specify the `scripts_dir` variable).
+
+The `scripts_dir` variable is used with Ansible `copy` module, so you can specify to copy a directory content or file itself by adding a final `/`.
 
 Example:
 
@@ -485,16 +487,27 @@ Example:
       vars:
         zabbix_agent_server: zabbix.mydomain.com
         zabbix_agent_userparameters:
+          # This will copy the file `mysql`
           - name: mysql
             scripts_dir: mysql
+          # This one has no script
           - name: galera
+          # This will copy any files present in the `more-complex` directory
+          - name: more-complex
+            scripts_dir: more-complex/
 
+```
+
+Example of the "templates/userparameters/galera.j2" file:
+
+```
+UserParameter=mysql.ping_to,mysqladmin -uroot ping | grep -c alive
 ```
 
 Example of the "templates/userparameters/mysql.j2" file:
 
 ```
-UserParameter=mysql.ping_to,mysqladmin -uroot ping | grep -c alive
+UserParameter=mysql.check_something,/etc/zabbix/scripts/mysql
 ```
 
 # License
