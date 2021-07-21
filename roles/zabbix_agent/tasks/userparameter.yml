@@ -26,7 +26,6 @@
     mode: 0755
   become: yes
   when: 
-    - item.scripts_dir is defined
     - zabbix_agent_os_family != "Windows"
 
 - block:
