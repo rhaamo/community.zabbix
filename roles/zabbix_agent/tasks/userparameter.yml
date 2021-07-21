@@ -34,6 +34,14 @@
     become: yes
     with_items: "{{ zabbix_agent_userparameters }}"
   
+  - name: "Creating zabbix scripts directory"
+    file:
+      path: "/etc/zabbix/scripts/"
+      state: directory
+      mode: 0755
+    become: yes
+    when: item.scripts_dir is defined
+
   - name: "Installing user-defined scripts"
     copy:
       src: "{{ zabbix_agent_userparameters_scripts_src }}/{{ item.scripts_dir }}"
